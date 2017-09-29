@@ -9,7 +9,7 @@ class Subject(models.Model):
         cards0 = fact0.card_set.all()
         card0 = cards0[0]
 
-        return card0.format_card()
+        return card0
 
 class Fact(models.Model):
     subject = models.ForeignKey(to=Subject)

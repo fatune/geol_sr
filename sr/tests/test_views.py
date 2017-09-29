@@ -1,17 +1,10 @@
-from django.test import TestCase
-from django.utils.html import escape
+from unittest import skip
 
 from sr.models import Subject
 
-class HomePageTest(TestCase):
+from .base import UTests
 
-    def setUp(self):
-        subjects_ = Subject()
-        subjects_.save()
-
-        subject = Subject()
-        subject.title = 'My Title'
-        subject.save()
+class HomePageTest(UTests):
 
     def test_uses_home_template(self):
         response = self.client.get('/')

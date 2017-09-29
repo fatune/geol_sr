@@ -1,8 +1,17 @@
 from django.test import TestCase
 from django.utils.html import escape
 
+from sr.models import Subject
 
 class HomePageTest(TestCase):
+
+    def setUp(self):
+        subjects_ = Subject()
+        subjects_.save()
+
+        subject = Subject()
+        subject.title = 'My Title'
+        subject.save()
 
     def test_uses_home_template(self):
         response = self.client.get('/')
@@ -10,7 +19,11 @@ class HomePageTest(TestCase):
 
     def test_uses_study_templates(self):
         response = self.client.get('/study/1/')
-        self.assertTemplateUsed(response, 'study.html')
+        self.assertTemplateUsed(response, 'study.html', "i'm here")
+
+    def test_raises_error_when_wrong_subject_id_passed(self):
+        response = self.client.get('/study/1346/')
+        self.assertEqual(response.status_code, 404)
 
 #class StudyViewTest(TestCase):
 #

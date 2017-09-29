@@ -26,6 +26,9 @@ class NewVisitorTest(FunctionalTest):
         self.assertRegex(edith_list_url, '/study')
 
         # User reads a fancy introduction 
+        text = self.browser.find_element_by_id('id_front_text')
+        self.assertIn('Welcome!', header_text)
+
 
         # User hits enter and sees a first question map
 

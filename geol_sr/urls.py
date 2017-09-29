@@ -17,9 +17,10 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 from sr import views
+from sr import urls as sr_urls
 
 urlpatterns = [
     url(r'^$', views.home_page, name='home'),
-    url(r'^study/$', views.home_page, name='study'),
+    url(r'^study/', include(sr_urls)),
     url(r'^admin/', include(admin.site.urls)),
 ]

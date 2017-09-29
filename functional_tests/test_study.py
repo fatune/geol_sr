@@ -16,7 +16,10 @@ class NewVisitorTest(FunctionalTest):
         self.assertIn('Geology', header_text)
 
         # User is invited to follow a link to study a NE subject
-        link = self.browser.find_element_by_id('id_link_to_study')
+        #link = self.browser.find_element_by_id('id_link_to_study')
+        link = self.browser.find_element_by_link_text('Study NE')
+
+
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
             'Study NE subject'

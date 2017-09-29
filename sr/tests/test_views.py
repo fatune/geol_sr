@@ -8,6 +8,12 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
+#class StudyViewTest(TestCase):
+#
+#    def study_uses_list_template(self):
+#        list_ = List.objects.create()
+#        response = self.client.get('/lists/%d/' % (list_.id,))
+#        self.assertTemplateUsed(response, 'list.html')
 
 
 #class NewListTest(TestCase):

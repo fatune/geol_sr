@@ -20,15 +20,10 @@ class NewVisitorTest(FunctionalTest):
         link = self.browser.find_element_by_link_text('Study NE')
 
 
-        self.assertEqual(
-            inputbox.get_attribute('placeholder'),
-            'Study NE subject'
-        )
-
         # User follows the link and notices that link has changed
         link.click()
         edith_list_url = self.browser.current_url
-        self.assertRegex(edith_list_url, '/study/.+')
+        self.assertRegex(edith_list_url, '/study')
 
         # User reads a fancy introduction 
 

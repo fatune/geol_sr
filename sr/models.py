@@ -3,6 +3,14 @@ from django.db import models
 class Subject(models.Model):
     title = models.TextField(default='')
 
+    def get_next_card(self):
+        facts = self.fact_set.all()
+        fact0 = facts[0]
+        cards0 = fact0.card_set.all()
+        card0 = cards0[0]
+
+        return card0.format_card()
+
 class Fact(models.Model):
     subject = models.ForeignKey(to=Subject)
     field1 = models.TextField(default='')
@@ -26,3 +34,7 @@ class Card(models.Model):
     fact = models.ForeignKey(to=Fact)
     front = models.TextField(default='')
     back = models.TextField(default='')
+
+    def format_card(self):
+        return {'front' : self.front,
+                'back' : self.back}

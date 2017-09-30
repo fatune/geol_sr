@@ -29,6 +29,9 @@ class NewVisitorTest(FunctionalTest):
         text = self.browser.find_element_by_id('id_front_text').text
         self.assertIn('Welcome!', text)
 
+        # User sees 'Show' button
+        button = self.browser.find_element_by_id('id_button_show')
+
 
         # User hits enter and sees a first question map
 

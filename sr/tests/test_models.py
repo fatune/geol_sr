@@ -1,3 +1,7 @@
+from freezegun import freeze_time
+
+from django.utils import timezone
+
 from sr.models import Subject, Fact, Card, Memory
 
 from .base import UTests
@@ -33,29 +37,27 @@ class ListAndItemModelsTest(UTests):
     def test_gettin_next_card(self):
         subject = Subject.objects.filter(title='My Title')[0]
 
-        next_card = subject.get_next_card(self.user)
+        next_memory_object = subject.get_next_card(self.user)
 
-        self.assertTrue(next_card)
-        self.assertTrue(next_card.format_card()['front']=='A fact 1')
-        self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
+        self.assertTrue(next_memory_object)
+        self.assertTrue(next_memory_object.format_card()['front']=='A fact 1')
+        self.assertTrue(next_memory_object.format_card()['back']=='Explaination of a fact 1')
 
-        next_card = subject.get_next_card(self.user)
-        self.assertTrue(next_card)
-        self.assertTrue(next_card.format_card()['front']=='A fact 1')
-        self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
+        next_memory_object = subject.get_next_card(self.user)
+        self.assertTrue(next_memory_object)
+        self.assertTrue(next_memory_object.format_card()['front']=='A fact 1')
+        self.assertTrue(next_memory_object.format_card()['back']=='Explaination of a fact 1')
+
 
         subject = Subject.objects.filter(title='Title2')[0]
 
         self.assertRaises(ValueError,subject.get_next_card,self.user)
 
-        #next_card = subject.get_next_card(self.user)
+    def test_rate_card(self):
+        subject = Subject.objects.filter(title='My Title')[0]
+        next_memory_object = subject.get_next_card(self.user)
 
-        #self.assertTrue(next_card)
-        #self.assertTrue(next_card.format_card()['front']=='A fact 1')
-        #self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
+        with freeze_time('2000-01-01 00:00:00'):
+            assert timezone.datetime.now() == timezone.datetime(2000, 1, 1)
 
-        #next_card = subject.get_next_card(self.user)
-        #self.assertTrue(next_card)
-        #self.assertTrue(next_card.format_card()['front']=='A fact 1')
-        #self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
-
+        self.assertTrue(next_memory_object.rate(1))

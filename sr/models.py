@@ -19,19 +19,21 @@ class Subject(models.Model):
             memory = to_be_repeated[0]
             break
 
-        return memory.card
+        return memory
 
     def add_new_card_to_memories(self, user):
         facts = Fact.objects.filter(subject=self).order_by('order')
         memories = Memory.objects.filter(user=user, subject=self).order_by('-fact__order')
         if memories.count() == 0:
             # if there is no memoriesed facts yet, take cards of first fact
+            # if there is no facts at all raise error
             if facts.count()>0:
                 new_fact = facts[0]
             else:
                 raise ValueError ("There is no new facts to learn")
         else:
             # if there is memoriesed facts, check order of last memorised and take this and next fact
+            # if there is no new facts at all raise error
             last_memorised_fact_order = memories[0].fact__order
             new_facts = facts.filter(order__lt = last_memorised_fact_order)
             if new_facts.count() >0:
@@ -75,10 +77,6 @@ class Card(models.Model):
     front = models.TextField(default='')
     back = models.TextField(default='')
 
-    def format_card(self):
-        return {'front' : self.front,
-                'back' : self.back}
-
 class Memory(models.Model):
     memory_strength = models.FloatField(default=0)
     last_answered = models.DateTimeField(auto_now_add=True)
@@ -87,3 +85,24 @@ class Memory(models.Model):
     card = models.ForeignKey(Card)
     fact = models.ForeignKey(Fact)
     subject = models.ForeignKey(Subject)
+
+    def format_card(self):
+        return {'front' : self.card.front,
+                'back' : self.card.back}
+
+    def rate(self, score):
+        return True
+        if score < 0:
+            self.memory_strength = 0
+            delta = timezone.timedelta(seconds=10)
+        else:
+            self.memory_strength += score
+            if self.memory_strength < 1: delta = timezone.timedelta(seconds=30)
+            elif self.memory_strength < 2: delta = timezone.timedelta(seconds=60)
+            elif self.memory_strength < 3: delta = timezone.timedelta(seconds=300)
+            elif self.memory_strength < 4: delta = timezone.timedelta(seconds=3600*12)
+            elif self.memory_strength >= 4: delta = timezone.timedelta(days=2**(self.memory_strength-4))
+        self.last_answered = timezone.now()
+        self.to_be_answered = timezone.now() + delta
+        self.save()
+

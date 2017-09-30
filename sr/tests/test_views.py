@@ -10,6 +10,7 @@ class HomePageTest(UTests):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
+    @skip
     def test_uses_study_templates(self):
         response = self.client.get('/study/1/')
         self.assertTemplateUsed(response, 'study.html', "i'm here")

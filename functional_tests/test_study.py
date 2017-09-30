@@ -32,8 +32,10 @@ class NewVisitorTest(FunctionalTest):
         # User sees 'Show' button
         button = self.browser.find_element_by_id('id_button_show')
 
-
         # User hits enter and sees a first question map
+        button.send_keys(Keys.ENTER)
+        text = self.browser.find_element_by_id('id_front_text').text
+        self.assertIn('First Question', text)
 
         # User clicks button and sees an answer to the first question map
         # and two buttons "Bad" and "Good"

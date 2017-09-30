@@ -1,4 +1,4 @@
-from sr.models import Subject, Fact, Card
+from sr.models import Subject, Fact, Card, Memory
 
 from .base import UTests
 
@@ -8,7 +8,7 @@ class ListAndItemModelsTest(UTests):
 
         subjects = Subject.objects.all()
 
-        self.assertTrue(subjects.count()==1)
+        self.assertTrue(subjects.count()==2)
         self.assertTrue(any(s.title =='My Title' for s in subjects))
 
         subject = subjects[0]
@@ -32,9 +32,30 @@ class ListAndItemModelsTest(UTests):
 
     def test_gettin_next_card(self):
         subject = Subject.objects.filter(title='My Title')[0]
-        next_card = subject.get_next_card()
+
+        next_card = subject.get_next_card(self.user)
 
         self.assertTrue(next_card)
         self.assertTrue(next_card.format_card()['front']=='A fact 1')
         self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
+
+        next_card = subject.get_next_card(self.user)
+        self.assertTrue(next_card)
+        self.assertTrue(next_card.format_card()['front']=='A fact 1')
+        self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
+
+        subject = Subject.objects.filter(title='Title2')[0]
+
+        self.assertRaises(ValueError,subject.get_next_card,self.user)
+
+        #next_card = subject.get_next_card(self.user)
+
+        #self.assertTrue(next_card)
+        #self.assertTrue(next_card.format_card()['front']=='A fact 1')
+        #self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
+
+        #next_card = subject.get_next_card(self.user)
+        #self.assertTrue(next_card)
+        #self.assertTrue(next_card.format_card()['front']=='A fact 1')
+        #self.assertTrue(next_card.format_card()['back']=='Explaination of a fact 1')
 

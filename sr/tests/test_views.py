@@ -22,10 +22,12 @@ class HomePageTest(UTests):
         response = self.client.get('/study/2/')
         self.assertTemplateUsed(response, 'no_fact_to_learn.html')
 
-    @skip
     def test_handles_no_card_to_learn(self):
         subject = Subject.objects.filter(title='My Title')[0]
         next_memory_object = subject.get_next_card(self.user)
+        self.assertTrue(next_memory_object.rate(1))
+        next_memory_object = subject.get_next_card(self.user)
+        self.assertTrue(next_memory_object.rate(1))
         self.assertTrue(next_memory_object.rate(1))
         self.assertTrue(next_memory_object.rate(1))
 

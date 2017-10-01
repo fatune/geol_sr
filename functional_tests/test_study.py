@@ -1,6 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+import time
+
 from .base import FunctionalTest
 
 class NewVisitorTest(FunctionalTest):
@@ -16,7 +18,7 @@ class NewVisitorTest(FunctionalTest):
 
         # User is invited to login
         # user notices login link
-        link = self.browser.find_element_by_link_text('login')
+        link = self.browser.find_element_by_link_text('Login')
 
         # user click login link and sees login page
         link.click()
@@ -33,8 +35,9 @@ class NewVisitorTest(FunctionalTest):
         password_field.send_keys(Keys.RETURN)
 
         # user notices that he's redirected to homem page
-        url = self.browser.current_url()
-        self.assertEqual( url, self.live_server_url)
+        time.sleep(2)
+        #self.wait_for(self.assertEqual( self.browser.current_url, self.live_server_url))
+        self.assertEqual( self.browser.current_url, self.live_server_url)
 
         # User is invited to follow a link to study a NE subject
         link = self.browser.find_element_by_link_text('Study NE')

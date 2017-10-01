@@ -1,9 +1,11 @@
 from selenium import webdriver
+from unittest import skip
 
 from .base import FunctionalTest
 
 class LayoutAndStylingTest(FunctionalTest):
 
+    @skip
     def test_layout_and_styling(self):
         # User goes to the home page
         self.browser.get(self.live_server_url)

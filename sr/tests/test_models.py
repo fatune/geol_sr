@@ -3,7 +3,7 @@ import pytz
 
 from django.utils import timezone
 
-from sr.models import Subject, Fact, Card, Memory
+from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn
 
 from .base import UTests
 
@@ -64,9 +64,9 @@ class ListAndItemModelsTest(UTests):
         self.assertTrue(next_memory_object.format_card()['front']=='A fact 1')
         self.assertTrue(next_memory_object.format_card()['back']=='Explaination of a fact 1')
 
-        subject = Subject.objects.filter(title='Title2')[0]
+        subject2 = Subject.objects.filter(title='Title2')[0]
 
-        self.assertRaises(ValueError,subject.get_next_card,self.user)
+        self.assertRaises(NoFactToLearn,subject2.get_next_card,self.user)
 
     def test_rate_card(self):
         subject = Subject.objects.filter(title='My Title')[0]
@@ -103,7 +103,7 @@ class ListAndItemModelsTest(UTests):
         self.assertEqual(next_memory_object.format_card()['front'], 'A fact 10')
         next_memory_object.rate(1)
 
-        self.assertRaises(ValueError,subject.get_next_card,self.user)
+        self.assertRaises(NoCardToLearn,subject.get_next_card,self.user)
 
         next_memory_object = subject.get_next_card(self.user2)
         self.assertEqual(Memory.objects.filter(subject=subject, user = self.user2).count(), 2)

@@ -18,8 +18,18 @@ class HomePageTest(UTests):
         response = self.client.get('/study/1346/')
         self.assertEqual(response.status_code, 404)
 
-    def test_handles_no_new_cards_to_learn(self):
+    def test_handles_no_fact_to_learn(self):
         response = self.client.get('/study/2/')
+        self.assertTemplateUsed(response, 'no_fact_to_learn.html')
+
+    @skip
+    def test_handles_no_card_to_learn(self):
+        subject = Subject.objects.filter(title='My Title')[0]
+        next_memory_object = subject.get_next_card(self.user)
+        self.assertTrue(next_memory_object.rate(1))
+        self.assertTrue(next_memory_object.rate(1))
+
+        response = self.client.get('/study/1/')
         self.assertTemplateUsed(response, 'no_cards_to_learn.html')
 
 #class StudyViewTest(TestCase):

@@ -5,6 +5,14 @@ from django.contrib.auth.models import User
 
 from django.utils import timezone
 
+class NoCardToLearn(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+class NoFactToLearn(Exception):
+    def __init__(self, message=None):
+        super().__init__(message)
+
 class Subject(models.Model):
     title = models.TextField(default='')
 
@@ -14,8 +22,15 @@ class Subject(models.Model):
                              to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
 
             if to_be_repeated.count() == 0:
-                self.add_new_card_to_memories(user)
-                continue
+                try:
+                    self.add_new_card_to_memories(user)
+                    continue
+                except NoFactToLearn:
+                    if to_be_repeated.count() < Memory.objects.filter(user=user, subject=self).count():
+                        raise NoCardToLearn ("There is no cards to learn yet")
+                    else:
+                        raise NoFactToLearn ("There is no new fact to learn")
+
             memory = to_be_repeated[0]
             break
 
@@ -31,7 +46,7 @@ class Subject(models.Model):
             if facts.count()>0:
                 new_fact = facts[0]
             else:
-                raise ValueError ("There is no new facts to learn")
+                raise NoFactToLearn ("There is no new fact to learn")
         else:
             # if there is memoriesed facts, check order of last memorised and take this and next fact
             # if there is no new facts at all raise error
@@ -40,7 +55,7 @@ class Subject(models.Model):
             if new_facts.count() >0:
                 new_fact = new_facts[0]
             else:
-                raise ValueError ("There is no new facts to learn")
+                raise NoFactToLearn ("There is no new fact to learn")
 
         cards = Card.objects.filter(fact=new_fact)
         for i,card in enumerate(cards):

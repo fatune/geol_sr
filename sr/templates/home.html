@@ -1,15 +1,9 @@
-<html>
-	<head>
-		<title>
-			Hi. This is Geology
-		</title>
-        </head>
-	<body>
-		<h1> Hi. Study Geology </h1>
-		
-		<a href="{% url 'study' subject_id=1 %}">Study NE</a>
+{% extends 'base.html' %}
 
-		<p> <a href="{% url 'login' %}">Login</a> </p>
+{% block main %}
+<h1> Hi. Study Geology </h1>
 
-	</body>
-</html>
+<a href="{% url 'study' subject_id=1 %}">Study NE</a>
+
+<p> <a href="{% url 'login' %}">Login</a> </p>
+{% endblock %}

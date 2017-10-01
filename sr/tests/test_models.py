@@ -7,7 +7,7 @@ from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn
 
 from .base import UTests
 
-from unittest import skip
+#from unittest import skip
 
 
 
@@ -109,3 +109,17 @@ class ListAndItemModelsTest(UTests):
         self.assertEqual(Memory.objects.filter(subject=subject, user = self.user2).count(), 2)
         self.assertEqual(next_memory_object.format_card()['front'], 'A fact 1')
         next_memory_object.rate(1)
+
+    def test_always_return_the_same_card_if_not_rated(self):
+        subject = Subject.objects.filter(title='My Title')[0]
+
+        with freeze_time('2000-01-01 00:00:00'):
+            next_memory_object = subject.get_next_card(self.user)
+
+        with freeze_time('2000-01-01 00:01:00'):
+            next_memory_object_ = subject.get_next_card(self.user)
+            self.assertEqual(next_memory_object, next_memory_object_)
+
+        with freeze_time('2000-01-01 01:01:00'):
+            next_memory_object__ = subject.get_next_card(self.user)
+            self.assertEqual(next_memory_object_, next_memory_object__)

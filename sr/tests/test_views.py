@@ -1,4 +1,4 @@
-from unittest import skip
+#from unittest import skip
 
 from sr.models import Subject
 

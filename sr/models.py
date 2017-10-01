@@ -11,7 +11,7 @@ class Subject(models.Model):
     def get_next_card(self, user):
         while True:
             to_be_repeated = Memory.objects.filter(user=user, subject=self,
-                             to_be_answered__lt = timezone.now()+timezone.timedelta(seconds=1000))
+                             to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
 
             if to_be_repeated.count() == 0:
                 self.add_new_card_to_memories(user)
@@ -24,6 +24,7 @@ class Subject(models.Model):
     def add_new_card_to_memories(self, user):
         facts = Fact.objects.filter(subject=self).order_by('order')
         memories = Memory.objects.filter(user=user, subject=self).order_by('-fact__order')
+
         if memories.count() == 0:
             # if there is no memoriesed facts yet, take cards of first fact
             # if there is no facts at all raise error
@@ -34,8 +35,8 @@ class Subject(models.Model):
         else:
             # if there is memoriesed facts, check order of last memorised and take this and next fact
             # if there is no new facts at all raise error
-            last_memorised_fact_order = memories[0].fact__order
-            new_facts = facts.filter(order__lt = last_memorised_fact_order)
+            last_memorised_fact_order = memories[0].fact.order
+            new_facts = facts.filter(order__gt = last_memorised_fact_order)
             if new_facts.count() >0:
                 new_fact = new_facts[0]
             else:
@@ -47,7 +48,7 @@ class Subject(models.Model):
                                        fact = new_fact,
                                        subject = self,)
 
-            m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)
+            m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)# - timezone.timedelta(seconds=5)
             m.save()
 
 
@@ -59,6 +60,10 @@ class Fact(models.Model):
 
 
     def create_cards(self):
+        # check if there is no cards about this fact yet
+        cards = Card.objects.filter(fact=self)
+        if cards.count() > 0: raise ValueError ("There are cards about this fact already")
+
         card_front = self.card_set.create()
         card_front.front = self.field1
         card_front.back = self.field2
@@ -91,7 +96,6 @@ class Memory(models.Model):
                 'back' : self.card.back}
 
     def rate(self, score):
-        return True
         if score < 0:
             self.memory_strength = 0
             delta = timezone.timedelta(seconds=10)
@@ -105,4 +109,5 @@ class Memory(models.Model):
         self.last_answered = timezone.now()
         self.to_be_answered = timezone.now() + delta
         self.save()
+        return True
 

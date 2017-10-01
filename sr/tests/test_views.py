@@ -4,6 +4,7 @@ from sr.models import Subject
 
 from .base import UTests
 
+@skip
 class HomePageTest(UTests):
 
     def test_uses_home_template(self):

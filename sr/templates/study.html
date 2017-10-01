@@ -3,27 +3,31 @@
 {% block main %}
   
   <h1> Study begins </h1>
-  
-  {% if show_question %}
-  
-    <p id="id_front_text"> {{ front }} </p>
+
+  <div class=" jumbotron">
     
-    <form method="POST" name="textfield">
-      {% csrf_token %}
-      <input type="submit" value="Submit" id="id_button_show" autofocus/>
-    </form>
+    {% if show_question %}
   
-  {% else %}
-  
-    <p id="id_back_text"> {{ back }} </p>
+      <p id="id_front_text"> {{ front }} </p>
+      
+      <form method="POST" name="textfield">
+        {% csrf_token %}
+        <input type="submit" value="Submit" id="id_button_show" autofocus/>
+      </form>
     
-    <form method="POST" name="textfield">
-      {% csrf_token %}
+    {% else %}
     
-      <input type="submit" value="-1" name="rate" id="id_button_rate"/>
-      <input type="submit" value="0" name="rate" id="id_button_rate"/>
-      <input type="submit" value="+1" name="rate" id="id_button_rate"/>
-    </form>
+      <p id="id_back_text"> {{ back }} </p>
+      
+      <form method="POST" name="textfield">
+        {% csrf_token %}
+      
+        <input type="submit" value="-1" name="rate" id="id_button_rate"/>
+        <input type="submit" value="0" name="rate" id="id_button_rate"/>
+        <input type="submit" value="+1" name="rate" id="id_button_rate"/>
+      </form>
+
+    </div>
   
   {% endif %}
   

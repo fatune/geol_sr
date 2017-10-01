@@ -1,10 +1,5 @@
-<html>
-	<head>
-		<title>
-			Hi. This is Geology
-		</title>
-  </head>
-	<body>
-					There is no new facts to learn now in {{ title }}. You've learnd everything!
-	</body>
-</html>
+{% extends 'base.html' %}
+
+{% block main %}
+  There is no facts to learn now in {{ title }}. 
+{% endblock %}

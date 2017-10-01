@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 
   <head>
     <meta charset="utf-8">
@@ -10,7 +10,14 @@
     <link href="/static/base.css" rel="stylesheet">
   </head>
 
-  <body>
+   <body>
+	    
+   <nav class="navbar navbar-default fixed-top">
+     <a class="navbar-brand" href="{% url 'home' %}">GeolSR</a>
+
+     <a href="{% url 'login' %}">Login</a>
+   </nav>
+
     <div class="container">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
@@ -19,5 +26,12 @@
         </div>
       </div>
     </div>
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+      </div>
+    </footer>
+
   </body>
 </html>

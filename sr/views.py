@@ -7,6 +7,8 @@ def home_page(request):
     return render(request, 'home.html')
 
 def study(request, subject_id):
+    if not request.user.is_authenticated: return render(request, 'please_login.html')
+
     subject = get_object_or_404(Subject, id=subject_id)
     context = {'title':subject.title}
     try:
@@ -19,5 +21,8 @@ def study(request, subject_id):
     context.update(next_card.format_card())
     return render(request, 'study.html', context)
 
-
+def study_list(request):
+    subjects = Subject.objects.all()
+    context = { 'subjects' : subjects }
+    return render(request, 'study_list.html', context)
 

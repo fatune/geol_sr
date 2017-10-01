@@ -34,6 +34,15 @@ class HomePageTest(UTests):
         response = self.client.get('/study/1/')
         self.assertTemplateUsed(response, 'no_cards_to_learn.html')
 
+    def test_anonymous_user_visits_study(self):
+        self.client.logout()
+        response = self.client.get('/study/1/')
+        self.assertTemplateUsed(response, 'please_login.html')
+
+    def test_user_visits_study_parent(self):
+        response = self.client.get('/study/')
+        self.assertTemplateUsed(response, 'study_list.html')
+
 #class StudyViewTest(TestCase):
 #
 #    def study_uses_list_template(self):

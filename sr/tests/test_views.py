@@ -12,7 +12,7 @@ class HomePageTest(UTests):
 
     def test_uses_study_templates(self):
         response = self.client.get('/study/1/')
-        self.assertTemplateUsed(response, 'study.html', "i'm here")
+        self.assertTemplateUsed(response, 'study.html' )
 
     def test_raises_error_when_wrong_subject_id_passed(self):
         response = self.client.get('/study/1346/')
@@ -20,7 +20,7 @@ class HomePageTest(UTests):
 
     def test_handles_no_new_cards_to_learn(self):
         response = self.client.get('/study/2/')
-        self.assertTemplateUsed(response, 'study.html', "i'm here")
+        self.assertTemplateUsed(response, 'no_cards_to_learn.html')
 
 #class StudyViewTest(TestCase):
 #

@@ -8,8 +8,11 @@ def home_page(request):
 
 def study(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
-    next_card = subject.get_next_card(request.user)
     context = {'title':subject.title}
+    try:
+        next_card = subject.get_next_card(request.user)
+    except ValueError:
+        return render(request, 'no_cards_to_learn.html', context)
 
     context.update(next_card.format_card())
     return render(request, 'study.html', context)

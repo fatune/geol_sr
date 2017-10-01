@@ -4,7 +4,6 @@ from sr.models import Subject
 
 from .base import UTests
 
-@skip
 class HomePageTest(UTests):
 
     def test_uses_home_template(self):
@@ -18,6 +17,10 @@ class HomePageTest(UTests):
     def test_raises_error_when_wrong_subject_id_passed(self):
         response = self.client.get('/study/1346/')
         self.assertEqual(response.status_code, 404)
+
+    def test_handles_no_new_cards_to_learn(self):
+        response = self.client.get('/study/2/')
+        self.assertTemplateUsed(response, 'study.html', "i'm here")
 
 #class StudyViewTest(TestCase):
 #

@@ -28,4 +28,3 @@ class FunctionalTest(LiveServerTestCase):
                 if time.time() - start_time > MAX_WAIT:
                     raise e
                 time.sleep(0.5)
-

@@ -17,7 +17,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertIn('Geology', header_text)
 
         # User visits page to login
-        self.browser.get(self.live_server_url + 'accounts/login?token=a0eddd3f-fcce-4e44-bc6b-b78ab6e23602' )
+        self.browser.get(self.live_server_url + 'accounts/login?token=6d7f22d9-4470-471b-a9cf-5e0f10bbedd6' )
 
         ## User is invited to login
         ## user notices login link
@@ -49,24 +49,34 @@ class NewVisitorTest(FunctionalTest):
         # User follows the link and notices that link has changed
         link.click()
         edith_list_url = self.browser.current_url
-        self.assertRegex(edith_list_url, '/study')
+        self.assertRegex(edith_list_url, '/study/')
 
         ## User reads a fancy introduction 
         #text = self.browser.find_element_by_id('id_front_text').text
         #self.assertIn('Welcome', text)
 
-        # User sees 'Show' button
-        button = self.browser.find_element_by_id('id_button_show')
 
         # User hits enter and sees a first question map
-        button.send_keys(Keys.ENTER)
         text = self.browser.find_element_by_id('id_front_text').text
-        self.assertIn('First Question', text)
+        #self.assertIn('Russia', text) 
+
+        # User sees 'Show' button
+        button = self.browser.find_element_by_id('id_button_show')
+        button.click()
+
+        # User clicks 'Show' button and sees a first question map
+        text = self.browser.find_element_by_id('id_back_text').text
+        #self.assertIn('Russia', text)
 
         # User clicks button and sees an answer to the first question map
-        # and two buttons "Bad" and "Good"
+        # and three buttons "Bad" , "Normal" and "Good"
+
+        button_bad = self.browser.find_element_by_id('id_button_rate_bad')
+        button_normal = self.browser.find_element_by_id('id_button_rate_normal')
+        button_good = self.browser.find_element_by_id('id_button_rate_good')
 
         # User clicks "Bad" button and sees a first question map again
+        button_bad.click()
 
         # User clicks button and sees an answer to the first question map
         # and two buttons "Bad" and "Good"

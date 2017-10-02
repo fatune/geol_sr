@@ -71,8 +71,7 @@ class Fact(models.Model):
     subject = models.ForeignKey(to=Subject)
     field1 = models.TextField(default='')
     field2 = models.TextField(default='')
-    order = models.IntegerField(unique=True)
-
+    order = models.IntegerField()
 
     def create_cards(self):
         # check if there is no cards about this fact yet
@@ -97,6 +96,10 @@ class Card(models.Model):
     front = models.TextField(default='')
     back = models.TextField(default='')
 
+    def format(self):
+        return {'front' : self.front,
+                'back' : self.back}
+
 class Memory(models.Model):
     memory_strength = models.FloatField(default=0)
     last_answered = models.DateTimeField(auto_now_add=True)
@@ -107,8 +110,7 @@ class Memory(models.Model):
     subject = models.ForeignKey(Subject)
 
     def format_card(self):
-        return {'front' : self.card.front,
-                'back' : self.card.back}
+        return self.card.format()
 
     def rate(self, score):
         if score < 0:

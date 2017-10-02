@@ -17,12 +17,12 @@ def send_login_email(request):
     print('saving uid', uid, 'for email', email, file=sys.stderr)
     url = request.build_absolute_uri('/accounts/login?uid=%s' % uid)
     print (url)
-    #send_mail(
-    #    'Your login link for Superlists',
-    #    'Use this link to log in:\n\n%s' % url,
-    #    'noreply@superlists',
-    #    [email],
-    #)
+    send_mail(
+        'Your login link for Superlists',
+        'Use this link to log in:\n\n%s' % url,
+        'noreply@superlists',
+        [email],
+    )
     return render(request, 'login_email_sent.html')
 
 def login(request):

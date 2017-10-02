@@ -21,10 +21,13 @@ from django.contrib.auth import views as auth_views
 from sr import views
 from sr import urls as sr_urls
 
+from accounts import urls as accounts_urls
+
 urlpatterns = [
     url(r'^$', views.home_page, name='home'),
-    url(r'login/$', auth_views.login, name='login'),
-    url(r'logout/$', auth_views.logout, name='logout'),
+    url(r'^accounts/', include(accounts_urls)),
+    #url(r'login/$', auth_views.login, name='login'),
+    #url(r'logout/$', auth_views.logout, name='logout'),
     url(r'^study/', include(sr_urls)),
     url(r'^admin/', include(admin.site.urls)),
 ]

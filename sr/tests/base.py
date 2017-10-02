@@ -1,8 +1,10 @@
 from django.test import TestCase
 from django.db import models
-from django.contrib.auth.models import User
-
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+from accounts.models import Token
 
 from sr.models import Subject, Fact, Card
 
@@ -37,10 +39,14 @@ class UTests(TestCase):
 
         self.assertEqual(Card.objects.all().count(), 4)
 
+        self.user = User(email='a@b.com')
+        self.user2 = User(email='a2@b.com')
 
-        self.user = User.objects.create_user(username='testuser', password='12345')
-        self.user2 = User.objects.create_user(username='testuser2', password='12345')
-        login = self.client.login(username='testuser', password='12345')
+        token = Token.objects.create(email='a@b.com')
+
+        #login = self.client.login(username='testuser', password='12345')
+        login = self.client.login(uid=token.uid)
+        self.assertTrue(login)
 
         subject2 = Subject.objects.create()
         subject2.title = 'Title2'

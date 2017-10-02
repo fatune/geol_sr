@@ -16,23 +16,26 @@ class NewVisitorTest(FunctionalTest):
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('Geology', header_text)
 
-        # User is invited to login
-        # user notices login link
-        link = self.browser.find_element_by_link_text('Login')
+        # User visits page to login
+        self.browser.get(self.live_server_url + 'accounts/login?token=a0eddd3f-fcce-4e44-bc6b-b78ab6e23602' )
 
-        # user click login link and sees login page
-        link.click()
-        login_url = self.browser.current_url
-        self.assertRegex(login_url, 'login')
+        ## User is invited to login
+        ## user notices login link
+        #link = self.browser.find_element_by_link_text('Login')
 
-        # user notices login input in inputs his login
-        username_field = self.browser.find_element_by_name('username')
-        username_field.send_keys('selenium')
+        ## user click login link and sees login page
+        #link.click()
+        #login_url = self.browser.current_url
+        #self.assertRegex(login_url, 'login')
 
-        # user notices pass input in inputs his pass
-        password_field = self.browser.find_element_by_name('password')
-        password_field.send_keys('pass')
-        password_field.send_keys(Keys.RETURN)
+        ## user notices login input in inputs his login
+        #username_field = self.browser.find_element_by_name('username')
+        #username_field.send_keys('selenium')
+
+        ## user notices pass input in inputs his pass
+        #password_field = self.browser.find_element_by_name('password')
+        #password_field.send_keys('pass')
+        #password_field.send_keys(Keys.RETURN)
 
         # user notices that he's redirected to homem page
         time.sleep(2)

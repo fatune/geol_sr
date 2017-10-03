@@ -20,11 +20,10 @@ class Subject(models.Model):
 
     def get_next_card(self, user):
         while True:
-            #to_be_repeated = Memory.objects.filter(user=user, subject=self,
-            #                 to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
             to_be_repeated = Memory.objects.filter(user=user,
                                                    card__fact__subject=self,
-                             to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
+                                                   to_be_answered__lt = timezone.now() + \
+                                                                        timezone.timedelta(seconds=1))
 
             if to_be_repeated.count() == 0:
                 try:

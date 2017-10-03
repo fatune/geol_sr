@@ -88,13 +88,11 @@ class Fact(models.Model):
         if cards.count() > 0: raise ValueError ("There are cards about this fact already")
 
         card_front = self.card_set.create()
-        card_front.front = self.field1
-        card_front.back = self.field2
+        card_front.side = 0
         card_front.save()
 
         card_back = self.card_set.create()
-        card_back.front = self.field2
-        card_back.back = self.field1
+        card_back.side = 1
         card_back.save()
 
         return True
@@ -102,12 +100,15 @@ class Fact(models.Model):
 
 class Card(models.Model):
     fact = models.ForeignKey(to=Fact)
-    front = models.TextField(default='')
-    back = models.TextField(default='')
+    side = models.IntegerField(default=0)
 
     def format(self):
-        return {'front' : self.front,
-                'back' : self.back}
+        sides = [self.fact.field1, self.fact.field2]
+
+        if self.side == 1: sides.reverse()
+
+        return {'front' : sides[0],
+                'back' : sides[1]}
 
 class Memory(models.Model):
     card = models.ForeignKey(Card)

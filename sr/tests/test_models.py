@@ -40,15 +40,15 @@ class ListAndItemModelsTest(UTests):
 
         self.assertEqual(Card.objects.all().count(), 4)
 
-        self.assertEqual(cards[0].front,'A fact 1')
-        self.assertEqual(cards[0].back,'Explaination of a fact 1')
-        self.assertEqual(cards[1].front,'Explaination of a fact 1')
-        self.assertEqual(cards[1].back,'A fact 1')
+        self.assertEqual(cards[0].fact.field1,'A fact 1')
+        self.assertEqual(cards[1].fact.field1,'A fact 1')
+        self.assertEqual(cards[0].side,0)
+        self.assertEqual(cards[1].side,1)
 
-        self.assertEqual(cards2[0].front,'A fact 10')
-        self.assertEqual(cards2[0].back,'Explaination of a fact 10')
-        self.assertEqual(cards2[1].front,'Explaination of a fact 10')
-        self.assertEqual(cards2[1].back,'A fact 10')
+        self.assertEqual(cards2[0].fact.field1,'A fact 10')
+        self.assertEqual(cards2[1].fact.field1,'A fact 10')
+        self.assertEqual(cards2[0].side,0)
+        self.assertEqual(cards2[1].side,1)
 
     def test_gettin_next_card(self):
         subject = Subject.objects.filter(title='My Title')[0]

@@ -1,5 +1,3 @@
-#from itertools import chain
-
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -74,6 +72,24 @@ class Subject(models.Model):
             m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)# - timezone.timedelta(seconds=5)
             m.save()
 
+class SuperFact(object):
+    def create_cards(self):
+        # check if there is no cards about this fact yet
+        cards = Card.objects.filter(fact=self)
+        if cards.count() > 0: raise ValueError ("There are cards about this fact already")
+
+        card_front = self.card_set.create()
+        card_front.side = 0
+        card_front.save()
+
+        card_back = self.card_set.create()
+        card_back.side = 1
+        card_back.save()
+
+        return True
+
+
+
 
 class Fact(models.Model):
     subject = models.ForeignKey(to=Subject)
@@ -96,18 +112,38 @@ class Fact(models.Model):
 
         return True
 
+class Factpic(SuperFact, models.Model):
+    subject = models.ForeignKey(to=Subject)
+    field1 = models.TextField(default='')
+    field2 = models.TextField(default='')
+    img1 = models.TextField(default='')
+    img2 = models.TextField(default='')
+    order = models.IntegerField()
 
 class Card(models.Model):
     fact = models.ForeignKey(to=Fact)
     side = models.IntegerField(default=0)
 
     def format(self):
-        sides = [self.fact.field1, self.fact.field2]
+        return {'front' : self.front,
+                'back' : self.back}
 
-        if self.side == 1: sides.reverse()
+class CardPic(Card):
+    type = models.IntegerField(default=0)
 
-        return {'front' : sides[0],
-                'back' : sides[1]}
+    def format(self):
+        if self.type == 0:
+            front_img = self.fact.img1
+            back_img = self.fact.img2
+        else:
+            front_img = self.fact.img2
+            back_img = self.fact.img1
+
+        return {'front' : self.front,
+                'back' : self.back,
+                'front_img' : front_img,
+                'back_img' : back_img}
+
 
 class Memory(models.Model):
     card = models.ForeignKey(Card)
@@ -115,9 +151,6 @@ class Memory(models.Model):
     memory_strength = models.FloatField(default=0)
     last_answered = models.DateTimeField(auto_now_add=True)
     to_be_answered = models.DateTimeField(null=True, default=None, blank=True)
-
-    def __str__(self):
-        return self.card.front
 
     def format_card(self):
         return self.card.format()

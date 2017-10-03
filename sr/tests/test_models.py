@@ -3,7 +3,7 @@ import pytz
 
 from django.utils import timezone
 
-from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn
+from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn, Factpic
 
 from .base import UTests
 
@@ -17,12 +17,25 @@ class ListAndItemModelsTest(UTests):
         subjects = Subject.objects.all()
         subject = Subject.objects.filter(title = 'Subj with pictures')[0]
 
-        f = subject.factpic_set.create(order=1)
-        f.field1 = ' '
-        f.field2 = ' '
-        f.pic1 = ' '
-        f.pic2 = ' '
+        facts_count_before = Fact.objects.all().count()
+
+        Factpic.objects.all()
+        f = Factpic.objects.create(subject=subject, order = 1)
+
+
+        f.field1 = '111'
+        f.field2 = '2'
+        f.pic1 = '3'
+        f.pic2 = '4'
         f.save()
+
+        ff = Factpic.objects.all()
+        self.assertEqual(ff.count(), 1)
+        self.assertEqual(ff[0],f)
+
+        self.assertEqual(facts_count_before, Fact.objects.all().count())
+
+        subject.get_next_card(self.user)
 
     def test_creating_two_cards_with_the_same_order(self):
         pass

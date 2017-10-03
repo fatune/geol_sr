@@ -1,9 +1,11 @@
+#from itertools import chain
+
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from accounts.models import User
 
-from django.utils import timezone
 
 class NoCardToLearn(Exception):
     def __init__(self, message):
@@ -18,15 +20,17 @@ class Subject(models.Model):
 
     def get_next_card(self, user):
         while True:
-            to_be_repeated = Memory.objects.filter(user=user, subject=self,
-                             to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
+            to_be_repeated = Memory.objects.filter(user=user,
+                                                   card__fact__subject=self,
+                                                   to_be_answered__lt = timezone.now() + \
+                                                                        timezone.timedelta(seconds=1))
 
             if to_be_repeated.count() == 0:
                 try:
                     self.add_new_card_to_memories(user)
                     continue
                 except NoFactToLearn:
-                    if to_be_repeated.count() < Memory.objects.filter(user=user, subject=self).count():
+                    if to_be_repeated.count() < Memory.objects.filter(user=user, card__fact__subject=self).count():
                         raise NoCardToLearn ("There is no cards to learn yet")
                     else:
                         raise NoFactToLearn ("There is no new fact to learn")
@@ -38,9 +42,13 @@ class Subject(models.Model):
 
     def add_new_card_to_memories(self, user):
         facts = Fact.objects.filter(subject=self).order_by('order')
-        memories = Memory.objects.filter(user=user, subject=self).order_by('-fact__order')
+        memories_unsorted = Memory.objects.filter(user=user,
+                                                  card__fact__subject=self)
+        memories = sorted(memories_unsorted,
+                          key=lambda m: m.card.fact.order,
+                          reverse=True)
 
-        if memories.count() == 0:
+        if len(memories) == 0:
             # if there is no memoriesed facts yet, take cards of first fact
             # if there is no facts at all raise error
             if facts.count()>0:
@@ -50,7 +58,7 @@ class Subject(models.Model):
         else:
             # if there is memoriesed facts, check order of last memorised and take this and next fact
             # if there is no new facts at all raise error
-            last_memorised_fact_order = memories[0].fact.order
+            last_memorised_fact_order = memories[0].card.fact.order
             new_facts = facts.filter(order__gt = last_memorised_fact_order)
             if new_facts.count() >0:
                 new_fact = new_facts[0]
@@ -59,9 +67,9 @@ class Subject(models.Model):
 
         cards = Card.objects.filter(fact=new_fact)
         for i,card in enumerate(cards):
-            m = card.memory_set.create(user = user,
-                                       fact = new_fact,
-                                       subject = self,)
+            m = card.memory_set.create(user = user)
+                                       #fact = new_fact,
+                                       #subject = self,)
 
             m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)# - timezone.timedelta(seconds=5)
             m.save()
@@ -79,13 +87,11 @@ class Fact(models.Model):
         if cards.count() > 0: raise ValueError ("There are cards about this fact already")
 
         card_front = self.card_set.create()
-        card_front.front = self.field1
-        card_front.back = self.field2
+        card_front.side = 0
         card_front.save()
 
         card_back = self.card_set.create()
-        card_back.front = self.field2
-        card_back.back = self.field1
+        card_back.side = 1
         card_back.save()
 
         return True
@@ -93,21 +99,25 @@ class Fact(models.Model):
 
 class Card(models.Model):
     fact = models.ForeignKey(to=Fact)
-    front = models.TextField(default='')
-    back = models.TextField(default='')
+    side = models.IntegerField(default=0)
 
     def format(self):
-        return {'front' : self.front,
-                'back' : self.back}
+        sides = [self.fact.field1, self.fact.field2]
+
+        if self.side == 1: sides.reverse()
+
+        return {'front' : sides[0],
+                'back' : sides[1]}
 
 class Memory(models.Model):
+    card = models.ForeignKey(Card)
+    user = models.ForeignKey(User)
     memory_strength = models.FloatField(default=0)
     last_answered = models.DateTimeField(auto_now_add=True)
     to_be_answered = models.DateTimeField(null=True, default=None, blank=True)
-    user = models.ForeignKey(User)
-    card = models.ForeignKey(Card)
-    fact = models.ForeignKey(Fact)
-    subject = models.ForeignKey(Subject)
+
+    def __str__(self):
+        return self.card.front
 
     def format_card(self):
         return self.card.format()

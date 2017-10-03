@@ -1,9 +1,11 @@
+#from itertools import chain
+
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from accounts.models import User
 
-from django.utils import timezone
 
 class NoCardToLearn(Exception):
     def __init__(self, message):
@@ -38,9 +40,13 @@ class Subject(models.Model):
 
     def add_new_card_to_memories(self, user):
         facts = Fact.objects.filter(subject=self).order_by('order')
-        memories = Memory.objects.filter(user=user, subject=self).order_by('-fact__order')
+        memories_unsorted = Memory.objects.filter(user=user,
+                                                  card__fact__subject=self)
+        memories = sorted(memories_unsorted,
+                          key=lambda m: m.card.fact.order,
+                          reverse=True)
 
-        if memories.count() == 0:
+        if len(memories) == 0:
             # if there is no memoriesed facts yet, take cards of first fact
             # if there is no facts at all raise error
             if facts.count()>0:
@@ -108,6 +114,9 @@ class Memory(models.Model):
     card = models.ForeignKey(Card)
     fact = models.ForeignKey(Fact)
     subject = models.ForeignKey(Subject)
+
+    def __str__(self):
+        return self.card.front
 
     def format_card(self):
         return self.card.format()

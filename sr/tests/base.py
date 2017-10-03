@@ -51,3 +51,9 @@ class UTests(TestCase):
         subject2 = Subject.objects.create()
         subject2.title = 'Title2'
         subject2.save()
+
+        # setup facts with pictures
+        subject3 = Subject.objects.create()
+        subject3.title = 'Subj with pictures'
+        subject3.save()
+

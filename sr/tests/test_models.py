@@ -13,16 +13,30 @@ from .base import UTests
 
 class ListAndItemModelsTest(UTests):
 
+    def test_creating_item_with_pictures(self):
+        subjects = Subject.objects.all()
+        subject = Subject.objects.filter(title = 'Subj with pictures')[0]
+
+        f = subject.factpic_set.create(order=1)
+        f.field1 = ' '
+        f.field2 = ' '
+        f.pic1 = ' '
+        f.pic2 = ' '
+        f.save()
+
+    def test_creating_two_cards_with_the_same_order(self):
+        pass
+
     def test_getting_item(self):
 
         subjects = Subject.objects.all()
 
-        self.assertTrue(subjects.count()==2)
+        self.assertTrue(subjects.count()==3)
         self.assertTrue(any(s.title =='My Title' for s in subjects))
 
         subject = subjects[0]
 
-        facts = Fact.objects.all()
+        facts = Fact.objects.filter(subject=subject)
         self.assertTrue(facts.count()==2)
         self.assertTrue(any(f.field1 =='A fact 1' for f in facts))
         self.assertTrue(any(f.field2 =='Explaination of a fact 1' for f in facts))

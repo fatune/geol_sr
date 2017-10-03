@@ -20,7 +20,10 @@ class Subject(models.Model):
 
     def get_next_card(self, user):
         while True:
-            to_be_repeated = Memory.objects.filter(user=user, subject=self,
+            #to_be_repeated = Memory.objects.filter(user=user, subject=self,
+            #                 to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
+            to_be_repeated = Memory.objects.filter(user=user,
+                                                   card__fact__subject=self,
                              to_be_answered__lt = timezone.now() + timezone.timedelta(seconds=1))
 
             if to_be_repeated.count() == 0:
@@ -28,7 +31,7 @@ class Subject(models.Model):
                     self.add_new_card_to_memories(user)
                     continue
                 except NoFactToLearn:
-                    if to_be_repeated.count() < Memory.objects.filter(user=user, subject=self).count():
+                    if to_be_repeated.count() < Memory.objects.filter(user=user, card__fact__subject=self).count():
                         raise NoCardToLearn ("There is no cards to learn yet")
                     else:
                         raise NoFactToLearn ("There is no new fact to learn")
@@ -56,7 +59,7 @@ class Subject(models.Model):
         else:
             # if there is memoriesed facts, check order of last memorised and take this and next fact
             # if there is no new facts at all raise error
-            last_memorised_fact_order = memories[0].fact.order
+            last_memorised_fact_order = memories[0].card.fact.order
             new_facts = facts.filter(order__gt = last_memorised_fact_order)
             if new_facts.count() >0:
                 new_fact = new_facts[0]
@@ -65,9 +68,9 @@ class Subject(models.Model):
 
         cards = Card.objects.filter(fact=new_fact)
         for i,card in enumerate(cards):
-            m = card.memory_set.create(user = user,
-                                       fact = new_fact,
-                                       subject = self,)
+            m = card.memory_set.create(user = user)
+                                       #fact = new_fact,
+                                       #subject = self,)
 
             m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)# - timezone.timedelta(seconds=5)
             m.save()
@@ -107,13 +110,11 @@ class Card(models.Model):
                 'back' : self.back}
 
 class Memory(models.Model):
+    card = models.ForeignKey(Card)
+    user = models.ForeignKey(User)
     memory_strength = models.FloatField(default=0)
     last_answered = models.DateTimeField(auto_now_add=True)
     to_be_answered = models.DateTimeField(null=True, default=None, blank=True)
-    user = models.ForeignKey(User)
-    card = models.ForeignKey(Card)
-    fact = models.ForeignKey(Fact)
-    subject = models.ForeignKey(Subject)
 
     def __str__(self):
         return self.card.front

@@ -91,22 +91,22 @@ class ListAndItemModelsTest(UTests):
     def test_get_next_card_after_rate_first(self):
 
         subject = Subject.objects.filter(title='My Title')[0]
-        self.assertEqual(Memory.objects.filter(subject=subject, user = self.user).count(), 0)
+        self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user).count(), 0)
 
         next_memory_object = subject.get_next_card(self.user)
-        self.assertEqual(Memory.objects.filter(subject=subject, user = self.user).count(), 2)
+        self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user).count(), 2)
         self.assertEqual(next_memory_object.format_card()['front'], 'A fact 1')
         next_memory_object.rate(1)
 
         next_memory_object = subject.get_next_card(self.user)
-        self.assertEqual(Memory.objects.filter(subject=subject, user = self.user).count(), 4)
+        self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user).count(), 4)
         self.assertEqual(next_memory_object.format_card()['front'], 'A fact 10')
         next_memory_object.rate(1)
 
         self.assertRaises(NoCardToLearn,subject.get_next_card,self.user)
 
         next_memory_object = subject.get_next_card(self.user2)
-        self.assertEqual(Memory.objects.filter(subject=subject, user = self.user2).count(), 2)
+        self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user2).count(), 2)
         self.assertEqual(next_memory_object.format_card()['front'], 'A fact 1')
         next_memory_object.rate(1)
 

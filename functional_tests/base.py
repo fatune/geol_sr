@@ -28,3 +28,5 @@ class FunctionalTest(LiveServerTestCase):
                 if time.time() - start_time > MAX_WAIT:
                     raise e
                 time.sleep(0.5)
+    def login(self):
+        self.browser.get(self.live_server_url + 'accounts/login?token=6d7f22d9-4470-471b-a9cf-5e0f10bbedd6' )

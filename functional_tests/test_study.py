@@ -7,6 +7,15 @@ from .base import FunctionalTest
 
 class NewVisitorTest(FunctionalTest):
 
+    def test_user_study_subject_with_pictures(self):
+        self.login()
+        self.browser.get(self.live_server_url + 'study/2')
+
+        # User sees a first question map
+        text = self.browser.find_element_by_id('id_front_text').text
+        pic = self.browser.find_element_by_id('id_front_pic').text
+
+
     def test_user_begin_studying_for_the_1st_tim(self):
         # User visits homepage
         self.browser.get(self.live_server_url)
@@ -17,7 +26,7 @@ class NewVisitorTest(FunctionalTest):
         self.assertIn('Geology', header_text)
 
         # User visits page to login
-        self.browser.get(self.live_server_url + 'accounts/login?token=6d7f22d9-4470-471b-a9cf-5e0f10bbedd6' )
+        self.login()
 
         ## User is invited to login
         ## user notices login link

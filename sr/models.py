@@ -125,8 +125,12 @@ class Card(models.Model):
     side = models.IntegerField(default=0)
 
     def format(self):
-        return {'front' : self.front,
-                'back' : self.back}
+        sides = [self.fact.field1, self.fact.field2]
+
+        if self.side == 1: sides.reverse()
+
+        return {'front' : sides[0],
+                'back' : sides[1]}
 
 class CardPic(Card):
     type = models.IntegerField(default=0)

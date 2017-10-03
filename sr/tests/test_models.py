@@ -7,12 +7,13 @@ from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn,
 
 from .base import UTests
 
-#from unittest import skip
+from unittest import skip
 
 
 
 class ListAndItemModelsTest(UTests):
 
+    @skip
     def test_creating_item_with_pictures(self):
         subjects = Subject.objects.all()
         subject = Subject.objects.filter(title = 'Subj with pictures')[0]

@@ -6,7 +6,6 @@ from django.utils import timezone
 
 from accounts.models import User
 
-
 class NoCardToLearn(Exception):
     def __init__(self, message):
         super().__init__(message)
@@ -68,9 +67,6 @@ class Subject(models.Model):
         cards = Card.objects.filter(fact=new_fact)
         for i,card in enumerate(cards):
             m = card.memory_set.create(user = user)
-                                       #fact = new_fact,
-                                       #subject = self,)
-
             m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)# - timezone.timedelta(seconds=5)
             m.save()
 

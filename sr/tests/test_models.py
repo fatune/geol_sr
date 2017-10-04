@@ -13,44 +13,26 @@ from .base import UTests
 
 class ListAndItemModelsTest(UTests):
 
-    def test_getting_item(self):
+    def test_basic_objects_hyerarchy(self):
+        self.assertTrue(Subject.objects.all().count() > 1)
+        subject = Subject.objects.filter(title='My Title')[0]
 
-        subjects = Subject.objects.all()
+        facts = Fact.objects.filter(subject=subject)
+        self.assertEqual(facts.count(), 2)
+        self.assertEqual(facts[0].order, 1)
+        self.assertEqual(facts[1].order, 10)
 
-        self.assertTrue(subjects.count()==2)
-        self.assertTrue(any(s.title =='My Title' for s in subjects))
-
-        subject = subjects[0]
-
-        facts = Fact.objects.all()
-        self.assertTrue(facts.count()==2)
-
-
-        #self.assertTrue(any(f.front_text =='A fact 1' for f in facts))
-        #self.assertTrue(any(f.back_text =='Explaination of a fact 1' for f in facts))
-
-        #self.assertTrue(any(f.front_text =='A fact 10' for f in facts))
-        #self.assertTrue(any(f.back_text =='Explaination of a fact 10' for f in facts))
-
-        fact = facts[0]
-        fact2= facts[1]
-
-        #self.assertEqual(fact2.front_text, "A fact 10")
-
-        cards = Card.objects.filter(fact=fact)
-        cards2 = Card.objects.filter(fact=fact2)
-
-        self.assertEqual(Card.objects.all().count(), 4)
+        cards = Card.objects.filter(fact__in = facts)
+        self.assertEqual(cards.count(), 4)
 
         self.assertEqual(cards[0].front_text,'A fact 1')
         self.assertEqual(cards[1].back_text,'A fact 1')
-        #self.assertEqual(cards[0].side,0)
-        #self.assertEqual(cards[1].side,1)
 
-        self.assertEqual(cards2[0].front_text,'A fact 10')
-        self.assertEqual(cards2[1].back_text,'A fact 10')
-        #self.assertEqual(cards2[0].side,0)
-        #self.assertEqual(cards2[1].side,1)
+        self.assertEqual(cards[2].front_text,'A fact 10')
+        self.assertEqual(cards[3].back_text,'A fact 10')
+
+        self.assertEqual(Memory.objects.all().count(), 0)
+
 
     def test_gettin_next_card(self):
         subject = Subject.objects.filter(title='My Title')[0]

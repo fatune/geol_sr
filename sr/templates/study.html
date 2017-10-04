@@ -8,7 +8,11 @@
     
     {% if show_question %}
   
-      <p id="id_front_text"> {{ front }} </p>
+      <p id="id_front_text"> 
+        {% autoescape off %}
+          {{ front }} 
+        {% endautoescape %}
+      </p>
       
       <form method="POST" name="textfield">
         {% csrf_token %}

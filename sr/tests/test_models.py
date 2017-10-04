@@ -3,7 +3,7 @@ import pytz
 
 from django.utils import timezone
 
-from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn
+from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn, create_cards_simple
 
 from .base import UTests
 
@@ -12,6 +12,26 @@ from .base import UTests
 
 
 class ListAndItemModelsTest(UTests):
+
+    def test_card_gets_html_to_char_field(self):
+        subject = Subject.objects.create(title='Subj with HTML')
+        subject.save()
+
+        fact = Fact.objects.create(subject=subject, order=1)
+        fact.save()
+
+        field1 = u'<img src="pic_mountain.jpg">'
+        field2 = u'<img src="pic_mountain2.jpg">'
+        create_cards_simple(fact, field1, field2)
+
+        cards = Card.objects.filter(fact=fact)
+        self.assertEqual(cards.count(),2)
+
+        self.assertEqual(cards[0].front_text, field1)
+        self.assertEqual(cards[1].front_text, field2)
+        self.assertEqual(cards[0].back_text, field2)
+        self.assertEqual(cards[1].back_text, field1)
+
 
     def test_basic_objects_hyerarchy(self):
         self.assertTrue(Subject.objects.all().count() > 1)

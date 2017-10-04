@@ -77,37 +77,34 @@ class Subject(models.Model):
 
 class Fact(models.Model):
     subject = models.ForeignKey(to=Subject)
-    field1 = models.TextField(default='')
-    field2 = models.TextField(default='')
+    explanation = models.TextField(default='')
     order = models.IntegerField()
 
-    def create_cards(self):
-        # check if there is no cards about this fact yet
-        cards = Card.objects.filter(fact=self)
-        if cards.count() > 0: raise ValueError ("There are cards about this fact already")
+def create_cards_simple(fact, front, back):
+    # check if there is no cards about this fact yet
+    cards = Card.objects.filter(fact=fact)
+    if cards.count() > 0: raise ValueError ("There are cards about this fact already")
 
-        card_front = self.card_set.create()
-        card_front.side = 0
-        card_front.save()
+    f1 = fact.card_set.create()
+    f1.front_text = front
+    f1.back_text = back
+    f1.save()
 
-        card_back = self.card_set.create()
-        card_back.side = 1
-        card_back.save()
-
-        return True
+    f2 = fact.card_set.create()
+    f2.front_text = back
+    f2.back_text = front
+    f2.save()
 
 
 class Card(models.Model):
     fact = models.ForeignKey(to=Fact)
-    side = models.IntegerField(default=0)
+    front_text = models.TextField()
+    back_text = models.TextField()
 
-    def format(self):
-        sides = [self.fact.field1, self.fact.field2]
+    def format_card(self):
+        return {'front':self.front_text,
+                'back':self.back_text}
 
-        if self.side == 1: sides.reverse()
-
-        return {'front' : sides[0],
-                'back' : sides[1]}
 
 class Memory(models.Model):
     card = models.ForeignKey(Card)
@@ -118,9 +115,6 @@ class Memory(models.Model):
 
     def __str__(self):
         return self.card.front
-
-    def format_card(self):
-        return self.card.format()
 
     def rate(self, score):
         if score < 0:

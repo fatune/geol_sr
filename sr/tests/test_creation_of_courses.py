@@ -19,10 +19,13 @@ class NewCourseCreationTest(UTests):
         facts = Fact.objects.filter(subject=subjects[0])
         self.assertEquals(facts.count(), 2)
 
-        self.assertEqual(facts[0].field1, 'Russia' )
-        self.assertEqual(facts[0].field2, 'Moscow' )
-        self.assertEqual(facts[1].field1, 'Ukraine' )
-        self.assertEqual(facts[1].field2, 'Kiev' )
+        card0 = Card.objects.filter(fact=facts[0])[0]
+        card1 = Card.objects.filter(fact=facts[1])[0]
+
+        self.assertEqual(card0.front_text, 'Russia' )
+        self.assertEqual(card0.back_text, 'Moscow' )
+        self.assertEqual(card1.front_text, 'Ukraine' )
+        self.assertEqual(card1.back_text, 'Kiev' )
 
         self.assertEqual(Card.objects.all().count(), cards_before+4)
 

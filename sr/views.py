@@ -15,12 +15,12 @@ def study(request, subject_id):
     context = {'title':subject.title}
 
     try:
-        card = subject.get_next_card(request.user)
+        memory = subject.get_next_card(request.user)
     except NoCardToLearn:
         return render(request, 'no_cards_to_learn.html', context)
     except NoFactToLearn:
         return render(request, 'no_fact_to_learn.html', context)
-    context.update(card.format_card())
+    context.update(memory.card.format_card())
 
     if request.method == "POST":
         context.update({'show_question': False})

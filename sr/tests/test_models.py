@@ -24,31 +24,33 @@ class ListAndItemModelsTest(UTests):
 
         facts = Fact.objects.all()
         self.assertTrue(facts.count()==2)
-        self.assertTrue(any(f.field1 =='A fact 1' for f in facts))
-        self.assertTrue(any(f.field2 =='Explaination of a fact 1' for f in facts))
 
-        self.assertTrue(any(f.field1 =='A fact 10' for f in facts))
-        self.assertTrue(any(f.field2 =='Explaination of a fact 10' for f in facts))
+
+        #self.assertTrue(any(f.front_text =='A fact 1' for f in facts))
+        #self.assertTrue(any(f.back_text =='Explaination of a fact 1' for f in facts))
+
+        #self.assertTrue(any(f.front_text =='A fact 10' for f in facts))
+        #self.assertTrue(any(f.back_text =='Explaination of a fact 10' for f in facts))
 
         fact = facts[0]
         fact2= facts[1]
 
-        self.assertEqual(fact2.field1, "A fact 10")
+        #self.assertEqual(fact2.front_text, "A fact 10")
 
         cards = Card.objects.filter(fact=fact)
         cards2 = Card.objects.filter(fact=fact2)
 
         self.assertEqual(Card.objects.all().count(), 4)
 
-        self.assertEqual(cards[0].fact.field1,'A fact 1')
-        self.assertEqual(cards[1].fact.field1,'A fact 1')
-        self.assertEqual(cards[0].side,0)
-        self.assertEqual(cards[1].side,1)
+        self.assertEqual(cards[0].front_text,'A fact 1')
+        self.assertEqual(cards[1].back_text,'A fact 1')
+        #self.assertEqual(cards[0].side,0)
+        #self.assertEqual(cards[1].side,1)
 
-        self.assertEqual(cards2[0].fact.field1,'A fact 10')
-        self.assertEqual(cards2[1].fact.field1,'A fact 10')
-        self.assertEqual(cards2[0].side,0)
-        self.assertEqual(cards2[1].side,1)
+        self.assertEqual(cards2[0].front_text,'A fact 10')
+        self.assertEqual(cards2[1].back_text,'A fact 10')
+        #self.assertEqual(cards2[0].side,0)
+        #self.assertEqual(cards2[1].side,1)
 
     def test_gettin_next_card(self):
         subject = Subject.objects.filter(title='My Title')[0]
@@ -56,13 +58,13 @@ class ListAndItemModelsTest(UTests):
         next_memory_object = subject.get_next_card(self.user)
 
         self.assertTrue(next_memory_object)
-        self.assertTrue(next_memory_object.format_card()['front']=='A fact 1')
-        self.assertTrue(next_memory_object.format_card()['back']=='Explaination of a fact 1')
+        self.assertTrue(next_memory_object.card.format_card()['front']=='A fact 1')
+        self.assertTrue(next_memory_object.card.format_card()['back']=='A fact 1 back')
 
         next_memory_object = subject.get_next_card(self.user)
         self.assertTrue(next_memory_object)
-        self.assertTrue(next_memory_object.format_card()['front']=='A fact 1')
-        self.assertTrue(next_memory_object.format_card()['back']=='Explaination of a fact 1')
+        self.assertTrue(next_memory_object.card.format_card()['front']=='A fact 1')
+        self.assertTrue(next_memory_object.card.format_card()['back']=='A fact 1 back')
 
         subject2 = Subject.objects.filter(title='Title2')[0]
 
@@ -95,19 +97,19 @@ class ListAndItemModelsTest(UTests):
 
         next_memory_object = subject.get_next_card(self.user)
         self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user).count(), 2)
-        self.assertEqual(next_memory_object.format_card()['front'], 'A fact 1')
+        self.assertEqual(next_memory_object.card.format_card()['front'], 'A fact 1')
         next_memory_object.rate(1)
 
         next_memory_object = subject.get_next_card(self.user)
         self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user).count(), 4)
-        self.assertEqual(next_memory_object.format_card()['front'], 'A fact 10')
+        self.assertEqual(next_memory_object.card.format_card()['front'], 'A fact 10')
         next_memory_object.rate(1)
 
         self.assertRaises(NoCardToLearn,subject.get_next_card,self.user)
 
         next_memory_object = subject.get_next_card(self.user2)
         self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user2).count(), 2)
-        self.assertEqual(next_memory_object.format_card()['front'], 'A fact 1')
+        self.assertEqual(next_memory_object.card.format_card()['front'], 'A fact 1')
         next_memory_object.rate(1)
 
     def test_always_return_the_same_card_if_not_rated(self):

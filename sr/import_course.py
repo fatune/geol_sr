@@ -1,6 +1,6 @@
 import csv
 
-from .models import Subject, Fact
+from .models import Subject, Fact, create_cards_simple
 
 def import_course_from_csv(file_name, subject_title):
     with open(file_name, 'rt', encoding="utf8") as csvfile:
@@ -16,6 +16,6 @@ def import_course_from_csv(file_name, subject_title):
     s.fact_set.all()
 
     for i,fact in enumerate(facts):
-        f = s.fact_set.create(order=i, field1=fact[0], field2=fact[1])
+        f = s.fact_set.create(order=i, explanation= "%s -- %s" % (fact[0], fact[1]) )
         f.save()
-        f.create_cards()
+        create_cards_simple(f, fact[0], fact[1])

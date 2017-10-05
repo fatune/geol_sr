@@ -19,3 +19,6 @@ def import_course_from_csv(file_name, subject_title):
         f = s.fact_set.create(order=i, explanation= "%s -- %s" % (fact[0], fact[1]) )
         f.save()
         create_cards_simple(f, fact[0], fact[1])
+
+if __name__=='__main__':
+    print('a')

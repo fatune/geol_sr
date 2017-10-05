@@ -21,7 +21,11 @@
     
     {% else %}
     
-      <p id="id_back_text"> {{ back }} </p>
+      <p id="id_back_text"> 
+        {% autoescape off %}
+          {{ back }} 
+        {% endautoescape %}
+      </p>
       
       <form method="POST" name="textfield">
         {% csrf_token %}

@@ -19,6 +19,8 @@ def send_login_email(request):
         'noreply@superlists',
         [email]
     )
+    #print( message_body)
+
     messages.success(
         request,
         "Check your email, we've sent you a link you can use to log in."

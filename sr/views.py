@@ -26,7 +26,7 @@ def study(request, subject_id):
         context.update({'show_question': False})
         score = request.POST.get("rate", None)
         if score in ['-1','0','+1']:
-            card.rate(int(score))
+            memory.rate(int(score))
             return HttpResponseRedirect(request.path)
         else:
             return render(request, 'study.html', context)

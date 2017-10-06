@@ -36,19 +36,8 @@ class HomePageTest(UTests):
         with freeze_time('2000-01-01 00:00:36'):
             # Wait 30 sec and still see the second answer
             response = self.client.get('/study/1/')
-            self.assertIn('A fact 10 back', response.content.decode('utf-8'))
-            response = self.client.post('/study/1/', data={'rate': '-1'})
+            self.assertIn('A fact 10', response.content.decode('utf-8'))
 
-            self.assertRedirects(response, '/study/1/')
-
-
-
-#        response = self.client.post(
-#            '/lists/%d/add_item' % (correct_list.id,),
-#            data={'item_text': 'A new item for an existing list'}
-#        )
-#
-#        self.assertRedirects(response, '/lists/%d/' % (correct_list.id,))
 
 
     def test_render_img_in_question(self):

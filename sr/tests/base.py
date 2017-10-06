@@ -6,7 +6,7 @@ User = get_user_model()
 
 from accounts.models import Token
 
-from sr.models import Subject, Fact, Card
+from sr.models import Subject, Fact, Card, create_cards_simple
 
 class UTests(TestCase):
 
@@ -14,29 +14,21 @@ class UTests(TestCase):
         subject = Subject.objects.create()
         subject.title = 'My Title'
         subject.save()
-
         subject.fact_set.all()
 
         fact = subject.fact_set.create(order=1)
-
-        fact.field1 = "A fact 1"
-        fact.field2 = "Explaination of a fact 1"
         fact.save()
 
-        self.assertTrue(fact.create_cards())
-        self.assertRaises(ValueError,fact.create_cards)
+        create_cards_simple(fact, 'A fact 1', 'A fact 1 back')
+        self.assertRaises(ValueError,create_cards_simple, fact, 'A fact 1', 'A fact 1 back')
 
         fact2 = subject.fact_set.create(order=10)
-
-        fact2.field1 = "A fact 10"
-        fact2.field2 = "Explaination of a fact 10"
         fact2.save()
 
-        self.assertTrue(fact2.create_cards())
-        self.assertRaises(ValueError,fact2.create_cards)
+        create_cards_simple(fact2, 'A fact 10', 'A fact 10 back')
+        self.assertRaises(ValueError,create_cards_simple, fact2, 'A fact 10', 'A fact 10 back')
 
         self.assertEqual(Fact.objects.all().count(), 2)
-
         self.assertEqual(Card.objects.all().count(), 4)
 
         self.user = User(email='a@b.com')
@@ -44,7 +36,6 @@ class UTests(TestCase):
 
         token = Token.objects.create(email='a@b.com')
 
-        #login = self.client.login(username='testuser', password='12345')
         login = self.client.login(uid=token.uid)
         self.assertTrue(login)
 

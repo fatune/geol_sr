@@ -2,7 +2,7 @@
 
 {% block main %}
 
-  <h1> List of courses </h1>
+  <h1> Список категорий для изучения </h1>
 
   {% for subject in subjects  %}
     <p> <a href="{% url 'study' subject_id=subject.id %}"> {{ subject.title }} </a> </p>

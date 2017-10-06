@@ -2,13 +2,15 @@
 
 {% block main %}
 
-  <h1> Study begins </h1>
-
   <div class=" jumbotron">
     
     {% if show_question %}
   
-      <p id="id_front_text"> {{ front }} </p>
+      <p id="id_front_text"> 
+        {% autoescape off %}
+          {{ front }} 
+        {% endautoescape %}
+      </p>
       
       <form method="POST" name="textfield">
         {% csrf_token %}
@@ -17,7 +19,11 @@
     
     {% else %}
     
-      <p id="id_back_text"> {{ back }} </p>
+      <p id="id_back_text"> 
+        {% autoescape off %}
+          {{ back }} 
+        {% endautoescape %}
+      </p>
       
       <form method="POST" name="textfield">
         {% csrf_token %}
@@ -43,3 +49,10 @@
 
 {% endblock %}
 
+{% block info %}
+
+  {% for m in to_repeat %}
+    <p> {{ m }} </p>
+  {% endfor %}
+
+{% endblock %}

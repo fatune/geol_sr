@@ -1,10 +1,59 @@
+from freezegun import freeze_time
 #from unittest import skip
+from django.shortcuts import render_to_response
 
-from sr.models import Subject
+from sr.models import Subject, Fact, create_cards_simple
 
 from .base import UTests
 
 class HomePageTest(UTests):
+
+    def test_always_rate_previous_card(self):
+        with freeze_time('2000-01-01 00:00:00'):
+            # see first question and send POST to see the answer
+            response = self.client.get('/study/1/')
+            self.assertIn('A fact 1', response.content.decode('utf-8'))
+            self.assertNotIn('A fact 1 back', response.content.decode('utf-8'))
+
+            response = self.client.post('/study/1/', data={'foo': '-1'})
+            self.assertTemplateUsed(response, 'study.html' )
+
+        with freeze_time('2000-01-01 00:00:05'):
+            # see the first answer and rate it -1
+            self.assertIn('A fact 1 back', response.content.decode('utf-8'))
+            response = self.client.post('/study/1/', data={'rate': '-1'})
+
+            self.assertRedirects(response, '/study/1/')
+
+        with freeze_time('2000-01-01 00:00:06'):
+            # see 2nd question and send POST to see the answer
+            response = self.client.get('/study/1/')
+            self.assertIn('A fact 10', response.content.decode('utf-8'))
+
+            response = self.client.post('/study/1/', data={'foo': '-1'})
+            self.assertTemplateUsed(response, 'study.html' )
+
+        with freeze_time('2000-01-01 00:00:36'):
+            # Wait 30 sec and still see the second answer
+            response = self.client.get('/study/1/')
+            self.assertIn('A fact 10', response.content.decode('utf-8'))
+
+
+
+    def test_render_img_in_question(self):
+        subject = Subject.objects.create(title='Subj with HTML')
+        subject.save()
+
+        fact = Fact.objects.create(subject=subject, order=1)
+        fact.save()
+
+        field1 = u'<img src="pic_mountain.jpg">'
+        field2 = u'<img src="pic_mountain2.jpg">'
+        create_cards_simple(fact, field1, field2)
+
+        response = self.client.get('/study/%s/' % subject.id)
+        self.assertTemplateUsed(response, 'study.html' )
+        self.assertIn(field1, response.content.decode('utf-8'))
 
     def test_uses_home_template(self):
         response = self.client.get('/')

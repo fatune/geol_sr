@@ -91,6 +91,21 @@ def create_cards_simple(fact, front, back):
     f2.back_text = front
     f2.save()
 
+def create_cards_simple_with_similar_second_card(fact, front_text, front_img, back_text, back_img):
+    # check if there is no cards about this fact yet
+    cards = Card.objects.filter(fact=fact)
+    if cards.count() > 0: raise ValueError ("There are cards about this fact already")
+
+    f1 = fact.card_set.create()
+    f1.front_text = "%s %s" % (front_text, front_img)
+    f1.back_text = "%s %s " % (back_text, back_img)
+    f1.save()
+
+    f2 = fact.card_set.create()
+    f2.front_text = "%s %s" % (back_text, front_img)
+    f2.back_text = "%s %s" % (back_text, back_img)
+    f2.save()
+
 
 class Card(models.Model):
     fact = models.ForeignKey(to=Fact)

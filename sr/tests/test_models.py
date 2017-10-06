@@ -120,6 +120,12 @@ class ListAndItemModelsTest(UTests):
         with freeze_time('2000-01-01 00:00:00'):
             next_memory_object = subject.get_next_card(self.user)
 
+        with freeze_time('2000-01-01 00:00:05'):
+            next_memory_object.rate(-1)
+
+        with freeze_time('2000-01-01 00:00:06'):
+            next_memory_object = subject.get_next_card(self.user)
+
         with freeze_time('2000-01-01 00:01:00'):
             next_memory_object_ = subject.get_next_card(self.user)
             self.assertEqual(next_memory_object, next_memory_object_)

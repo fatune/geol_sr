@@ -67,7 +67,7 @@ class Subject(models.Model):
         cards = Card.objects.filter(fact=new_fact)
         for i,card in enumerate(cards):
             m = card.memory_set.create(user = user)
-            m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*60)# - timezone.timedelta(seconds=5)
+            m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*600)# - timezone.timedelta(seconds=5)
             m.save()
 
 
@@ -102,7 +102,7 @@ def create_cards_simple_with_similar_second_card(fact, front_text, front_img, ba
     f1.save()
 
     f2 = fact.card_set.create()
-    f2.front_text = "%s %s" % (back_text, front_img)
+    f2.front_text = "%s %s" % (back_text, back_img)
     f2.back_text = "%s %s" % (front_text, back_img)
     f2.save()
 
@@ -116,6 +116,19 @@ class Card(models.Model):
         return {'front':self.front_text,
                 'back':self.back_text}
 
+def get_memorised_cards(user, subject):
+    to_be_repeated = Memory.objects.filter(user=user,
+                                           card__fact__subject=subject,
+                                           to_be_answered__lt = timezone.now() + \
+                                                                timezone.timedelta(seconds=3600)).order_by('to_be_answered')
+
+    others = Memory.objects.filter(user=user,
+                                   card__fact__subject=subject,
+                                   to_be_answered__gt = timezone.now() ).order_by('card__fact__order')
+
+    to_be = [m.card.fact.order for m in to_be_repeated]
+    other = [m.card.fact.order for m in others]
+    return to_be, other
 
 class Memory(models.Model):
     card = models.ForeignKey(Card)
@@ -130,7 +143,7 @@ class Memory(models.Model):
     def rate(self, score):
         if score < 0:
             self.memory_strength = 0
-            delta = timezone.timedelta(seconds=10)
+            delta = timezone.timedelta(seconds=5)
         else:
             self.memory_strength += score
             if self.memory_strength < 1: delta = timezone.timedelta(seconds=30)

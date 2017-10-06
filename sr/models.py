@@ -98,12 +98,12 @@ def create_cards_simple_with_similar_second_card(fact, front_text, front_img, ba
 
     f1 = fact.card_set.create()
     f1.front_text = "%s %s" % (front_text, front_img)
-    f1.back_text = "%s %s " % (back_text, back_img)
+    f1.back_text = "%s %s " % (front_text, back_img)
     f1.save()
 
     f2 = fact.card_set.create()
     f2.front_text = "%s %s" % (back_text, front_img)
-    f2.back_text = "%s %s" % (back_text, back_img)
+    f2.back_text = "%s %s" % (front_text, back_img)
     f2.save()
 
 

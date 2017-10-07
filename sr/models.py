@@ -154,5 +154,14 @@ class Memory(models.Model):
         self.last_answered = timezone.now()
         self.to_be_answered = timezone.now() + delta
         self.save()
+
+        # shift to_be_answered for all related cards
+        memories = Memory.objects.filter(user=self.user,
+                                         card__fact=self.card.fact,
+                                        ).exclude(id__in=[self.id])
+        for memory in memories:
+            memory.to_be_answered = timezone.now() + timezone.timedelta(seconds=600)
+            memory.save()
+
         return True
 

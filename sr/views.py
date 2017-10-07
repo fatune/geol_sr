@@ -28,12 +28,12 @@ def study(request, subject_id):
     except KeyError:
         pass
     to_be_repeated, other = get_memorised_cards(request.user, subject)
-    info = {'to_repeat': to_be_repeated,
-            'other' : other}
+    #info = {'to_repeat': to_be_repeated,
+    #        'other' : other}
 
 
     context.update(memory.card.format_card())
-    context.update(info)
+    #context.update(info)
 
 
     if request.method == "POST":

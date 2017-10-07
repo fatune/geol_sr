@@ -108,6 +108,27 @@ class ListAndItemModelsTest(UTests):
 
         with freeze_time('2000-01-01 00:01:35'):
             self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-01 00:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-01 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-02 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-04 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-08 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
 
     def test_get_next_card_after_rate_first(self):
 

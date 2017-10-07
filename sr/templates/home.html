@@ -3,6 +3,8 @@
 {% block main %}
 <h1> Простое изучение геологии </h1>
 
-<a href="{% url 'study' subject_id=1 %}">Study NE</a>
+  {% for subject in subjects  %}
+    <p> <a href="{% url 'study' subject_id=subject.id %}"> {{ subject.title }} </a> </p>
+  {% endfor %}
 
 {% endblock %}

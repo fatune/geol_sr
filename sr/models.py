@@ -6,6 +6,8 @@ from django.utils import timezone
 
 from accounts.models import User
 
+from .settings import *
+
 class NoCardToLearn(Exception):
     def __init__(self, message):
         super().__init__(message)
@@ -67,7 +69,7 @@ class Subject(models.Model):
         cards = Card.objects.filter(fact=new_fact)
         for i,card in enumerate(cards):
             m = card.memory_set.create(user = user)
-            m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*600)# - timezone.timedelta(seconds=5)
+            m.to_be_answered = timezone.now() + timezone.timedelta(seconds=i*DELTA_POSTPONE.seconds)
             m.save()
 
 
@@ -143,16 +145,26 @@ class Memory(models.Model):
     def rate(self, score):
         if score < 0:
             self.memory_strength = 0
-            delta = timezone.timedelta(seconds=5)
+            delta = DELTA_0
         else:
             self.memory_strength += score
-            if self.memory_strength < 1: delta = timezone.timedelta(seconds=30)
-            elif self.memory_strength < 2: delta = timezone.timedelta(seconds=60)
-            elif self.memory_strength < 3: delta = timezone.timedelta(seconds=300)
-            elif self.memory_strength < 4: delta = timezone.timedelta(seconds=3600*12)
-            elif self.memory_strength >= 4: delta = timezone.timedelta(days=2**(self.memory_strength-4))
+            if self.memory_strength < 1: delta = DELTA_1
+            elif self.memory_strength < 2: delta = DELTA_2
+            elif self.memory_strength < 3: delta = DELTA_3
+            elif self.memory_strength < 4: delta = DELTA_4
+            elif self.memory_strength >= 4:
+                delta = timezone.timedelta(days = DELTA_5.days**(self.memory_strength-4))
         self.last_answered = timezone.now()
         self.to_be_answered = timezone.now() + delta
         self.save()
+
+        # postpone to_be_answered for all related cards
+        memories = Memory.objects.filter(user=self.user,
+                                         card__fact=self.card.fact,
+                                        ).exclude(id__in=[self.id])
+        for memory in memories:
+            memory.to_be_answered = timezone.now() + DELTA_POSTPONE
+            memory.save()
+
         return True
 

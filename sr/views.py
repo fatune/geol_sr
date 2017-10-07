@@ -3,10 +3,25 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.models import User
 
-from .models import Subject, NoFactToLearn, NoCardToLearn, get_memorised_cards, Memory
+from .models import (Subject, Card, Memory,
+                     NoFactToLearn, NoCardToLearn,
+                     get_memorised_cards)
 
 def home_page(request):
-    return render(request, 'home.html')
+    subjects = Subject.objects.all()
+    context = { 'subjects' : subjects }
+    for subject in subjects:
+        whole = Card.objects.filter(fact__subject=subject).count()
+        if request.user.is_authenticated:
+            memorised = Memory.objects.filter(user=request.user,
+                                          card__fact__subject=subject,
+                                          memory_strength__gt=1).count()
+        else:
+            memorised = 0
+        subject.whole = whole
+        subject.memorised = memorised
+
+    return render(request, 'home.html', context)
 
 def study(request, subject_id):
     if not request.user.is_authenticated: return render(request, 'please_login.html')
@@ -28,12 +43,12 @@ def study(request, subject_id):
     except KeyError:
         pass
     to_be_repeated, other = get_memorised_cards(request.user, subject)
-    info = {'to_repeat': to_be_repeated,
-            'other' : other}
+    #info = {'to_repeat': to_be_repeated,
+    #        'other' : other}
 
 
     context.update(memory.card.format_card())
-    context.update(info)
+    #context.update(info)
 
 
     if request.method == "POST":

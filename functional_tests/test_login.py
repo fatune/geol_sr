@@ -7,12 +7,11 @@ from unittest import skip
 from .base import FunctionalTest
 
 TEST_EMAIL = 'test@ex.com'
-SUBJECT = 'Your login link for Superlists'
+SUBJECT = 'Your login link for Sr Geology'
 
 
 class LoginTest(FunctionalTest):
 
-    @skip
     def test_can_get_email_link_to_log_in(self):
         # Edith goes to the awesome superlists site
         # and notices a "Log in" section in the navbar for the first time
@@ -28,7 +27,6 @@ class LoginTest(FunctionalTest):
         ))
 
         # She checks her email and finds a message
-        #with self.settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend'):
         email = mail.outbox[0]
         self.assertIn(TEST_EMAIL, email.to)
         self.assertEqual(email.subject, SUBJECT)

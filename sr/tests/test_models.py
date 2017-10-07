@@ -1,17 +1,34 @@
+#from unittest import skip
 from freezegun import freeze_time
 import pytz
 
 from django.utils import timezone
 
-from sr.models import Subject, Fact, Card, Memory, NoFactToLearn, NoCardToLearn, create_cards_simple
-
 from .base import UTests
 
-#from unittest import skip
-
+from sr.models import (Subject, Fact, Card, Memory,
+                       NoFactToLearn, NoCardToLearn,
+                       create_cards_simple)
 
 
 class ListAndItemModelsTest(UTests):
+
+    def test_shift_linked_card_in_time_after_rating(self):
+        subject = Subject.objects.filter(title='My Title')[0]
+
+        with freeze_time('2000-01-01 00:00:00'):
+            next_memory_object = subject.get_next_card(self.user)
+            next_memory_object.rate(1)
+
+        with freeze_time('2000-01-02 00:00:00'):
+            next_memory_object.rate(1)
+
+        with freeze_time('2000-01-02 00:10:00'):
+            memories = Memory.objects.filter(user=self.user,
+                                             card__fact=next_memory_object.card.fact,
+                                            ).exclude(id__in=[next_memory_object.id])
+            linked_memory = memories[0]
+            self.assertEqual(linked_memory.to_be_answered, timezone.datetime.now(pytz.utc))
 
     def test_card_gets_html_to_char_field(self):
         subject = Subject.objects.create(title='Subj with HTML')
@@ -91,6 +108,27 @@ class ListAndItemModelsTest(UTests):
 
         with freeze_time('2000-01-01 00:01:35'):
             self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-01 00:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-01 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-02 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-04 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
+
+        with freeze_time('2000-01-08 12:06:35'):
+            self.assertEqual( next_memory_object.to_be_answered, timezone.datetime.now(pytz.utc))
+            self.assertTrue(next_memory_object.rate(1))
 
     def test_get_next_card_after_rate_first(self):
 
@@ -112,7 +150,7 @@ class ListAndItemModelsTest(UTests):
         next_memory_object = subject.get_next_card(self.user2)
         self.assertEqual(Memory.objects.filter(card__fact__subject=subject, user = self.user2).count(), 2)
         self.assertEqual(next_memory_object.card.format_card()['front'], 'A fact 1')
-        next_memory_object.rate(1)
+        #next_memory_object.rate(1)
 
     def test_always_return_the_same_card_if_not_rated(self):
         subject = Subject.objects.filter(title='My Title')[0]

@@ -7,7 +7,7 @@ from unittest import skip
 from .base import FunctionalTest
 
 TEST_EMAIL = 'test@ex.com'
-SUBJECT = 'Your login link for Superlists'
+SUBJECT = 'Your login link for Sr Geology'
 
 
 class LoginTest(FunctionalTest):

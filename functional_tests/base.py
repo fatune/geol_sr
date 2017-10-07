@@ -13,7 +13,7 @@ from sr.import_course import import_course_from_csv_similar_second_card
 MAX_WAIT = 10
 
 TEST_EMAIL = 'test@ex.com'
-SUBJECT = 'Your login link for Superlists'
+SUBJECT = 'Your login link for Sr Geology'
 
 class FunctionalTest(LiveServerTestCase):
 

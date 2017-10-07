@@ -1,10 +1,8 @@
-<html>
-	<head>
-		<title>
-						Study {{ title }}
-		</title>
-        </head>
-	<body>
-		<h1> Please login to begin studying </h1>
-	</body>
-</html>
+{% extends 'base.html' %}
+
+{% block main %}
+  <div class="alert alert-warning" role="alert">
+    <h4 class="alert-heading">Ой!</h4>
+    <p> Пожалуйста зарегистрируйтесь чтобы начать обучение </p>
+  </div>
+{% endblock %}

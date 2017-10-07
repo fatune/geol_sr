@@ -10,12 +10,14 @@ from .models import (Subject, Card, Memory,
 def home_page(request):
     subjects = Subject.objects.all()
     context = { 'subjects' : subjects }
-
     for subject in subjects:
         whole = Card.objects.filter(fact__subject=subject).count()
-        memorised = Memory.objects.filter(user=request.user,
+        if request.user.is_authenticated:
+            memorised = Memory.objects.filter(user=request.user,
                                           card__fact__subject=subject,
                                           memory_strength__gt=1).count()
+        else:
+            memorised = 0
         subject.whole = whole
         subject.memorised = memorised
 

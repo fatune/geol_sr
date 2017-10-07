@@ -3,11 +3,22 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.models import User
 
-from .models import Subject, NoFactToLearn, NoCardToLearn, get_memorised_cards, Memory
+from .models import (Subject, Card, Memory,
+                     NoFactToLearn, NoCardToLearn,
+                     get_memorised_cards)
 
 def home_page(request):
     subjects = Subject.objects.all()
     context = { 'subjects' : subjects }
+
+    for subject in subjects:
+        whole = Card.objects.filter(fact__subject=subject).count()
+        memorised = Memory.objects.filter(user=request.user,
+                                          card__fact__subject=subject,
+                                          memory_strength__gt=1).count()
+        subject.whole = whole
+        subject.memorised = memorised
+
     return render(request, 'home.html', context)
 
 def study(request, subject_id):

@@ -1,10 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} 
 
 {% block main %}
 <h1> Простое изучение геологии </h1>
 
   {% for subject in subjects  %}
-    <p> <a href="{% url 'study' subject_id=subject.id %}"> {{ subject.title }} </a> </p>
+  <p> <a href="{% url 'study' subject_id=subject.id %}"> {{ subject.title }} ( {{ subject.memorised }} / {{ subject.whole }} ) </a> </p>
   {% endfor %}
 
 {% endblock %}

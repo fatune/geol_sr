@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 from .models import Subject, NoFactToLearn, NoCardToLearn, get_memorised_cards, Memory
 
 def home_page(request):
-    return render(request, 'home.html')
+    subjects = Subject.objects.all()
+    context = { 'subjects' : subjects }
+    return render(request, 'home.html', context)
 
 def study(request, subject_id):
     if not request.user.is_authenticated: return render(request, 'please_login.html')

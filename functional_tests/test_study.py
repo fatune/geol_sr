@@ -14,10 +14,10 @@ class NewVisitorTest(FunctionalTest):
         # User notices the page title and header mention Geology 
         self.assertIn('Geology', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
-        self.assertIn('Geology', header_text)
+        self.assertIn('геолог', header_text)
 
         # User visits page to login
-        self.browser.get(self.live_server_url + 'accounts/login?token=6d7f22d9-4470-471b-a9cf-5e0f10bbedd6' )
+        self.login()
 
         ## User is invited to login
         ## user notices login link
@@ -40,7 +40,7 @@ class NewVisitorTest(FunctionalTest):
         # user notices that he's redirected to homem page
         time.sleep(2)
         #self.wait_for(self.assertEqual( self.browser.current_url, self.live_server_url))
-        self.assertEqual( self.browser.current_url, self.live_server_url)
+        self.assertEqual( self.browser.current_url, self.live_server_url+'/')
 
         # User is invited to follow a link to study a NE subject
         link = self.browser.find_element_by_link_text('Study NE')
@@ -54,7 +54,6 @@ class NewVisitorTest(FunctionalTest):
         ## User reads a fancy introduction 
         #text = self.browser.find_element_by_id('id_front_text').text
         #self.assertIn('Welcome', text)
-
 
         # User hits enter and sees a first question map
         text = self.browser.find_element_by_id('id_front_text').text

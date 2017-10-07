@@ -5,7 +5,6 @@ from django.shortcuts import redirect
 
 from accounts.models import Token
 
-
 def send_login_email(request):
     email = request.POST['email']
     token = Token.objects.create(email=email)
@@ -19,7 +18,6 @@ def send_login_email(request):
         'noreply@superlists',
         [email]
     )
-    #print( message_body)
 
     messages.success(
         request,

@@ -23,6 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 from django.utils.crypto import get_random_string
 
+
 def generate_secret_key(fname):
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
     secret = get_random_string(50, chars)
@@ -36,12 +37,11 @@ except ImportError:
     settings_dir = os.path.abspath(os.path.dirname(__file__))
     generate_secret_key(os.path.join(BASE_DIR, 'secret_key.py'))
     from secret_key import SECRET_KEY
-#SECRET_KEY = 'wh0&*oo@5yr1ga8mt$-%ukto(h7^gs_amo+c&=!1mpnyscy475'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fatune.pythonanywhere.com']
 
 LOGIN_REDIRECT_URL = 'home'
 
@@ -126,10 +126,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'geol.sr.49@gmail.com'
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

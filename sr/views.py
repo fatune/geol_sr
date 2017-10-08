@@ -7,6 +7,8 @@ from .models import (Subject, Card, Memory,
                      NoFactToLearn, NoCardToLearn,
                      get_memorised_cards)
 
+from django.conf import settings
+
 def home_page(request):
     subjects = Subject.objects.all()
     context = { 'subjects' : subjects }
